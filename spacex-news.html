@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpaceX News Feed — June 19, 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a0a;
+      --surface:  #111111;
+      --border:   #222222;
+      --accent:   #e31937;
+      --muted:    #666666;
+      --text:     #e8e8e8;
+      --sub:      #aaaaaa;
+      --mono:     'Courier New', Courier, monospace;
+      --sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0 0 3rem;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 2rem 1.5rem 1.5rem;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+
+    .feed-wordmark {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 0.35rem;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .feed-meta {
+      margin-top: 0.5rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .feed-meta span::before {
+      content: '▸ ';
+      color: var(--accent);
+    }
+
+    /* ── Feed list ── */
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .feed-count {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 1.25rem 0 0.75rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    /* ── Article card ── */
+    article {
+      border-bottom: 1px solid var(--border);
+      padding: 1.4rem 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    article:last-of-type {
+      border-bottom: none;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.18em 0.55em;
+      border-radius: 2px;
+      color: #fff;
+    }
+
+    .tag-launch      { background: var(--accent); }
+    .tag-finance     { background: #1a6fd4; }
+    .tag-exploration { background: #1d7a45; }
+    .tag-politics    { background: #7a4f1d; }
+
+    .card-time {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .card-source {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    article h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    article h2 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    article h2 a:hover {
+      color: #fff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    article p {
+      font-size: 0.88rem;
+      color: var(--sub);
+      line-height: 1.65;
+    }
+
+    .read-more {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+    }
+
+    .read-more:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      max-width: 780px;
+      margin: 2rem auto 0;
+      padding: 1rem 1.5rem 0;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    footer a { color: var(--muted); }
+  </style>
+</head>
+<body>
+
+<header>
+  <p class="feed-wordmark">SpaceX</p>
+  <h1>News Feed</h1>
+  <div class="feed-meta">
+    <span>June 19, 2026</span>
+    <span>6 items</span>
+    <span>Updated 09:00 UTC</span>
+  </div>
+</header>
+
+<main>
+  <p class="feed-count">6 entries &mdash; newest first</p>
+
+  <!-- ── Item 1 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-launch">Launch</span>
+      <span class="card-time">Jun 19, 2026 &bull; 01:50 PDT</span>
+      <span class="card-source">Spaceflight Now</span>
+    </div>
+    <h2>
+      <a href="https://spaceflightnow.com/2026/06/18/live-coverage-spacex-to-launch-intelligence-gathering-satellites-for-the-national-reconnaissance-office-2/" target="_blank" rel="noopener">
+        SpaceX launches classified NROL-179 Starshield satellites from Vandenberg
+      </a>
+    </h2>
+    <p>
+      A Falcon 9 rocket lifted off from Space Launch Complex 4E at Vandenberg Space Force Base at 1:50:45 a.m. PDT carrying an undisclosed number of satellites for the National Reconnaissance Office under the NROL-179 mission. The payload is widely believed to comprise Starshield spacecraft — a hardened, government-specific derivative of the Starlink platform designed for intelligence, surveillance, and reconnaissance. This marks SpaceX's 14th launch supporting the NRO's low-Earth-orbit constellation and its third NRO flight of 2026.
+    </p>
+    <a class="read-more" href="https://spaceflightnow.com/2026/06/18/live-coverage-spacex-to-launch-intelligence-gathering-satellites-for-the-national-reconnaissance-office-2/" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 2 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-finance">Finance</span>
+      <span class="card-time">Jun 19, 2026</span>
+      <span class="card-source">Yahoo Finance</span>
+    </div>
+    <h2>
+      <a href="https://finance.yahoo.com/markets/stocks/article/spacex-stock-drops-after-breaking-3-day-winning-streak-124809291.html" target="_blank" rel="noopener">
+        SpaceX stock (SPCX) slips to $174.90, breaking a three-day winning streak
+      </a>
+    </h2>
+    <p>
+      Shares of SpaceX (NASDAQ: SPCX) retreated to $174.90 on Friday, down from Thursday's close of $191.82, snapping a three-session rally. The pullback comes less than a week after the company's record-breaking IPO and amid broader market volatility. At current prices the company retains a market capitalisation of roughly $2.65 trillion — still above Microsoft and below its intraday peak of $2.94 trillion reached earlier this week.
+    </p>
+    <a class="read-more" href="https://finance.yahoo.com/markets/stocks/article/spacex-stock-drops-after-breaking-3-day-winning-streak-124809291.html" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 3 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-finance">Finance</span>
+      <span class="card-time">Jun 12–15, 2026</span>
+      <span class="card-source">CNBC</span>
+    </div>
+    <h2>
+      <a href="https://www.cnbc.com/2026/06/15/spacex-stock-record-ipo-debut.html" target="_blank" rel="noopener">
+        SpaceX IPO: biggest debut in history, briefly surpasses Amazon at $2.94 T valuation
+      </a>
+    </h2>
+    <p>
+      SpaceX listed on the Nasdaq on June 12 under the ticker SPCX, pricing at $135 per share and raising $75 billion — the largest IPO ever recorded. Shares jumped 25% on debut day to close at $161, then climbed another 20% on the first full trading session. The company's market cap briefly eclipsed Amazon to reach approximately $2.94 trillion before settling. CFRA initiated coverage with a "sell" rating and a $115 price target, citing elevated valuation expectations and capital intensity.
+    </p>
+    <a class="read-more" href="https://www.cnbc.com/2026/06/15/spacex-stock-record-ipo-debut.html" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 4 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-exploration">Exploration</span>
+      <span class="card-time">Jun 9, 2026</span>
+      <span class="card-source">Space.com</span>
+    </div>
+    <h2>
+      <a href="https://www.space.com/" target="_blank" rel="noopener">
+        NASA announces Artemis crew for mission to rehearse docking with SpaceX lunar lander
+      </a>
+    </h2>
+    <p>
+      NASA named the crew for its next Artemis mission, an Earth-orbit flight planned for 2027 that will test rendezvous and docking procedures with lunar landers being built by both SpaceX and Blue Origin. The flight is a critical step on NASA's path back to the Moon, validating the systems needed to transfer astronauts between the Orion capsule and the Human Landing System before a crewed lunar surface attempt.
+    </p>
+    <a class="read-more" href="https://www.space.com/" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 5 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-launch">Launch</span>
+      <span class="card-time">May 22, 2026</span>
+      <span class="card-source">Space.com / Spaceflight Now</span>
+    </div>
+    <h2>
+      <a href="https://www.space.com/news/live/spacex-starship-flight-12-launch-updates-may-22-2026" target="_blank" rel="noopener">
+        Starship V3 (Flight 12) achieves successful fiery splashdown in Indian Ocean
+      </a>
+    </h2>
+    <p>
+      SpaceX launched the first Starship Version 3 vehicle on May 22 from Starbase, Texas, in what became the twelfth overall integrated Starship test flight. The upgraded Ship completed its planned trajectory and made a controlled fiery splashdown in the Indian Ocean as intended, meeting every major mission objective. The V3 design features a significantly enlarged propellant capacity and structural refinements aimed at enabling the uncrewed Mars missions SpaceX is targeting for late 2026.
+    </p>
+    <a class="read-more" href="https://www.space.com/news/live/spacex-starship-flight-12-launch-updates-may-22-2026" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 6 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-exploration">Exploration</span>
+      <span class="card-time">Ongoing — 2026</span>
+      <span class="card-source">Space.com</span>
+    </div>
+    <h2>
+      <a href="https://www.space.com/space-exploration/launches-spacecraft/whats-next-for-spacexs-starship-mars-rocket-after-flight-10-success" target="_blank" rel="noopener">
+        SpaceX on track for uncrewed Starship Mars landing by end of 2026
+      </a>
+    </h2>
+    <p>
+      Following the success of Starship flights 10 and 12, SpaceX is maintaining its schedule to send minimally configured, leg-free Starship landers to the Martian surface before the year is out. Spokesman Dan Huot described the approach as placing "minimally viable landers on the surface — land right on the skirt, no legs" as an engineering proof-of-concept. If successful, the missions would mark the first time any spacecraft from a private company has landed on Mars, ahead of a crewed mission Elon Musk is targeting for the late 2020s.
+    </p>
+    <a class="read-more" href="https://www.space.com/space-exploration/launches-spacecraft/whats-next-for-spacexs-starship-mars-rocket-after-flight-10-success" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+</main>
+
+<footer>
+  <p>SpaceX News Feed &mdash; summaries generated on June 19, 2026.</p>
+  <p>Sources: <a href="https://spaceflightnow.com/" target="_blank" rel="noopener">Spaceflight Now</a> &bull; <a href="https://www.cnbc.com/" target="_blank" rel="noopener">CNBC</a> &bull; <a href="https://finance.yahoo.com/" target="_blank" rel="noopener">Yahoo Finance</a> &bull; <a href="https://www.space.com/" target="_blank" rel="noopener">Space.com</a></p>
+  <p>This page contains manually curated summaries and is not affiliated with SpaceX.</p>
+</footer>
+
+</body>
+</html>
