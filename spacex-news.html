@@ -20,29 +20,54 @@
     }
 
     body {
-      background: var(--bg);
+      background: #090a0f;
       color: var(--text);
       font-family: var(--sans);
       line-height: 1.6;
       min-height: 100vh;
       padding: 0 0 3rem;
+      position: relative;
     }
 
-    /* ── Header ── */
+    /* ── Starfield canvas ── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* everything above the starfield */
+    header, section, main, footer { position: relative; z-index: 1; }
+
+    /* ── Hero header ── */
     header {
-      border-bottom: 1px solid var(--border);
-      padding: 2rem 1.5rem 1.5rem;
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      border-bottom: none;
+      background:
+        linear-gradient(to bottom, rgba(9,10,15,0.35) 0%, rgba(9,10,15,0.92) 75%, #090a0f 100%),
+        url('https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=1400&q=80')
+        center 40% / cover no-repeat;
+    }
+
+    .hero-inner {
       max-width: 780px;
       margin: 0 auto;
+      padding: 3.5rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
     }
 
-    .feed-wordmark {
-      font-family: var(--mono);
-      font-size: 0.75rem;
-      letter-spacing: 0.18em;
-      color: var(--accent);
-      text-transform: uppercase;
-      margin-bottom: 0.35rem;
+    .hero-logo {
+      display: block;
+      height: 36px;
+      width: auto;
+      margin-bottom: 1rem;
+      /* SVG is black; invert to white for dark background */
+      filter: brightness(0) invert(1);
     }
 
     header h1 {
@@ -53,7 +78,7 @@
     }
 
     .feed-meta {
-      margin-top: 0.5rem;
+      margin-top: 0.6rem;
       font-family: var(--mono);
       font-size: 0.72rem;
       color: var(--muted);
@@ -67,11 +92,55 @@
       color: var(--accent);
     }
 
+    /* ── Content backdrop so text stays legible over starfield ── */
+    .stock-section,
+    main,
+    footer {
+      background: rgba(9, 10, 15, 0.82);
+    }
+
     /* ── Feed list ── */
     main {
       max-width: 780px;
       margin: 0 auto;
       padding: 0 1.5rem;
+    }
+
+    /* ── Feature photo strips ── */
+    .photo-strip {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .photo-strip figure {
+      margin: 0;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      line-height: 0;
+    }
+
+    .photo-strip img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      opacity: 0.88;
+      transition: opacity 0.3s;
+    }
+
+    .photo-strip img:hover { opacity: 1; }
+
+    .photo-strip figcaption {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      padding: 0.3rem 0.6rem;
+      line-height: 1;
+      background: var(--surface);
     }
 
     .feed-count {
@@ -239,13 +308,19 @@
 </head>
 <body>
 
+<canvas id="starfield"></canvas>
+
 <header>
-  <p class="feed-wordmark">SpaceX</p>
-  <h1>News Feed</h1>
-  <div class="feed-meta">
-    <span>June 19, 2026</span>
-    <span>6 items</span>
-    <span>Updated 09:00 UTC</span>
+  <div class="hero-inner">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/de/SpaceX-Logo.svg"
+         alt="SpaceX"
+         class="hero-logo">
+    <h1>News Feed</h1>
+    <div class="feed-meta">
+      <span>June 19, 2026</span>
+      <span>6 items</span>
+      <span>Updated 09:00 UTC</span>
+    </div>
   </div>
 </header>
 
@@ -311,6 +386,17 @@
     <a class="read-more" href="https://finance.yahoo.com/markets/stocks/article/spacex-stock-drops-after-breaking-3-day-winning-streak-124809291.html" target="_blank" rel="noopener">Read full story →</a>
   </article>
 
+  <!-- ── Photo strip 1: Falcon 9 night launch ── -->
+  <div class="photo-strip">
+    <figure>
+      <img
+        src="https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=1400&q=80"
+        alt="SpaceX Falcon 9 rocket launch at night"
+        onerror="this.closest('.photo-strip').style.display='none'">
+      <figcaption>Falcon 9 launch &bull; Photo: SpaceX / Unsplash (CC0)</figcaption>
+    </figure>
+  </div>
+
   <!-- ── Item 3 ── -->
   <article>
     <div class="card-top">
@@ -346,6 +432,17 @@
     </p>
     <a class="read-more" href="https://www.space.com/" target="_blank" rel="noopener">Read full story →</a>
   </article>
+
+  <!-- ── Photo strip 2: Starship / dual booster landing ── -->
+  <div class="photo-strip">
+    <figure>
+      <img
+        src="https://images.unsplash.com/photo-1517976384346-3136801d605d?auto=format&fit=crop&w=1400&q=80"
+        alt="SpaceX dual Falcon Heavy booster landing"
+        onerror="this.closest('.photo-strip').style.display='none'">
+      <figcaption>Falcon Heavy booster simultaneous landing &bull; Photo: SpaceX / Unsplash (CC0)</figcaption>
+    </figure>
+  </div>
 
   <!-- ── Item 5 ── -->
   <article>
@@ -392,6 +489,54 @@
 </footer>
 
 <script>
+/* ── Starfield ── */
+(function () {
+  'use strict';
+  var cv = document.getElementById('starfield');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+
+  var stars = [];
+  var W, H;
+
+  function resize() {
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+  }
+
+  function seed() {
+    stars = [];
+    var count = Math.floor((W * H) / 3500);
+    for (var i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.2,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.004,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(function (s) {
+      s.a += s.da;
+      if (s.a < 0.05) s.da = Math.abs(s.da);
+      if (s.a > 1)    s.da = -Math.abs(s.da);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + s.a.toFixed(2) + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize(); seed(); draw();
+  window.addEventListener('resize', function () { resize(); seed(); });
+})();
+
+/* ── Stock chart ── */
 (function () {
   'use strict';
   var cv = document.getElementById('spcxChart');
