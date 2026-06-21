@@ -182,6 +182,59 @@
     }
 
     footer a { color: var(--muted); }
+
+    /* ── Stock section ── */
+    .stock-section {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .market-snippet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.85rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      display: grid;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .ms-header {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .ms-ticker { font-weight: 700; color: var(--text); letter-spacing: 0.06em; }
+    .ms-exchange { font-weight: 400; color: var(--muted); font-size: 0.65rem; margin-left: 0.5rem; }
+
+    .ms-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .ms-price { font-size: 1.45rem; font-weight: 700; color: var(--text); }
+    .ms-up   { color: #22c55e; font-weight: 700; }
+    .ms-down { color: #ef4444; font-weight: 700; }
+
+    .ms-detail { color: var(--muted); line-height: 1.75; }
+
+    .ms-intraday {
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.35rem;
+      margin-top: 0.1rem;
+    }
+
+    #spcxChart { display: block; width: 100%; height: auto; }
   </style>
 </head>
 <body>
@@ -195,6 +248,29 @@
     <span>Updated 09:00 UTC</span>
   </div>
 </header>
+
+<section class="stock-section">
+  <div class="market-snippet">
+    <div class="ms-header">
+      <span><span class="ms-ticker">SPCX</span><span class="ms-exchange">NASDAQ</span></span>
+      <span>Last close &bull; Jun 18, 2026 &bull; 16:00 ET</span>
+    </div>
+    <div class="ms-price-row">
+      <span class="ms-price">$191.82</span>
+      <span class="ms-up">&#9650;&thinsp;+$56.82 &nbsp;&bull;&nbsp; +42.1% vs IPO $135.00</span>
+    </div>
+    <div class="ms-detail">
+      Open&nbsp;$192.00 &bull; High&nbsp;$193.50 &bull; Low&nbsp;$190.20 &bull; Vol&nbsp;44.8M
+      &bull; Mkt&nbsp;cap&nbsp;~$2.65T &bull; 52&#8209;wk&nbsp;range&nbsp;$135.00&thinsp;&ndash;&thinsp;$225.64
+    </div>
+    <div class="ms-intraday">
+      Jun&nbsp;19 intraday &nbsp; $174.90 &nbsp;
+      <span class="ms-down">&#9660;&thinsp;&minus;$16.92 &nbsp; &minus;8.83%</span>
+      &nbsp;&bull;&nbsp; session ongoing at time of publication
+    </div>
+  </div>
+  <canvas id="spcxChart" width="740" height="420"></canvas>
+</section>
 
 <main>
   <p class="feed-count">6 entries &mdash; newest first</p>
@@ -315,5 +391,169 @@
   <p>This page contains manually curated summaries and is not affiliated with SpaceX.</p>
 </footer>
 
+<script>
+(function () {
+  'use strict';
+  var cv = document.getElementById('spcxChart');
+  if (!cv) return;
+
+  var W = 740, H = 420;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width  = W * dpr;
+  cv.height = H * dpr;
+  var ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var IPO = 135;
+  var D = [
+    { d: 'Jun 12', c: 161.11, p:  19.34, intra: false },
+    { d: 'Jun 15', c: 193.30, p:  20.00, intra: false },
+    { d: 'Jun 16', c: 201.81, p:   4.41, intra: false },
+    { d: 'Jun 17', c: 191.82, p:  -4.95, intra: false },
+    { d: 'Jun 18', c: 191.82, p:   0.00, intra: false },
+    { d: 'Jun 19', c: 174.90, p:  -8.83, intra: true  },
+  ];
+
+  var GREEN = '#22c55e', RED = '#ef4444';
+  var MONO = "'Courier New',Courier,monospace";
+  function clr(p) { return p > 0.01 ? GREEN : p < -0.01 ? RED : '#555'; }
+
+  /* Layout */
+  var L = 56, R = 16, DIV = 240;
+  var pY1 = 26, pY2 = DIV - 10;
+  var cY1 = DIV + 22, cY2 = H - 28;
+  var cMid = (cY1 + cY2) / 2, cH2 = (cY2 - cY1) / 2;
+
+  var N = D.length, slot = (W - L - R) / N;
+  function xOf(i) { return L + (i + 0.5) * slot; }
+
+  /* Price Y  [pMin, pMax] → [pY1, pY2] */
+  var pMin = 125, pMax = 215;
+  function yOf(p) { return pY1 + (pMax - p) / (pMax - pMin) * (pY2 - pY1); }
+  var ipoY = yOf(IPO);
+
+  /* Pct Y  ±25 % range */
+  function yC(p) { return cMid - (p / 25) * cH2; }
+  var z = yC(0);
+
+  /* Background */
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, W, H);
+
+  /* Section labels */
+  ctx.font = 'bold 8px ' + MONO;
+  ctx.fillStyle = '#444';
+  ctx.textAlign = 'left';
+  ctx.fillText('PRICE (USD)', L, 14);
+  ctx.fillText('DAILY % CHANGE', L, DIV + 14);
+
+  /* Price gridlines */
+  [150, 170, 190, 210].forEach(function (p) {
+    var y = yOf(p);
+    ctx.setLineDash([2, 5]); ctx.strokeStyle = '#1c1c1c'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '9px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'right';
+    ctx.fillText('$' + p, L - 4, y + 3);
+  });
+
+  /* IPO baseline */
+  ctx.setLineDash([4, 4]); ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(L, ipoY); ctx.lineTo(W - R, ipoY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font = 'bold 8px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'left';
+  ctx.fillText('IPO  $135', L + 4, ipoY - 5);
+
+  /* Area fill between price line and IPO baseline */
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(D[0].c));
+  D.forEach(function (d, i) { ctx.lineTo(xOf(i), yOf(d.c)); });
+  ctx.lineTo(xOf(N - 1), ipoY);
+  ctx.lineTo(xOf(0), ipoY);
+  ctx.closePath();
+  var grad = ctx.createLinearGradient(0, pY1, 0, ipoY);
+  grad.addColorStop(0, 'rgba(34,197,94,0.14)');
+  grad.addColorStop(1, 'rgba(34,197,94,0.02)');
+  ctx.fillStyle = grad; ctx.fill();
+
+  /* Price line segments — each colored by next day's direction */
+  for (var i = 0; i < N - 1; i++) {
+    var nx = D[i + 1];
+    ctx.strokeStyle = clr(nx.p); ctx.lineWidth = 2;
+    ctx.globalAlpha = nx.intra ? 0.5 : 1;
+    if (nx.intra) ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.moveTo(xOf(i), yOf(D[i].c));
+    ctx.lineTo(xOf(i + 1), yOf(nx.c));
+    ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+  }
+
+  /* Price dots + % vs IPO labels */
+  D.forEach(function (d, i) {
+    var x = xOf(i), y = yOf(d.c), c = clr(d.p);
+    ctx.globalAlpha = d.intra ? 0.55 : 1;
+    /* outer ring */
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = c; ctx.fill();
+    /* bg cutout */
+    ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = '#0a0a0a'; ctx.fill();
+    /* % vs IPO */
+    var pct = (d.c - IPO) / IPO * 100;
+    ctx.font = 'bold 9px ' + MONO; ctx.fillStyle = c; ctx.textAlign = 'center';
+    ctx.fillText((pct >= 0 ? '+' : '') + pct.toFixed(1) + '%', x, y - 10);
+    ctx.globalAlpha = 1;
+  });
+
+  /* Divider */
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, DIV); ctx.lineTo(W, DIV); ctx.stroke();
+
+  /* Pct zero line */
+  ctx.strokeStyle = '#282828'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(L, z); ctx.lineTo(W - R, z); ctx.stroke();
+  ctx.font = '8px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'right';
+  ctx.fillText('0%', L - 4, z + 3);
+
+  /* Pct gridlines */
+  [-20, -10, 10, 20].forEach(function (p) {
+    var y = yC(p);
+    if (y < cY1 - 2 || y > cY2 + 2) return;
+    ctx.setLineDash([2, 5]); ctx.strokeStyle = '#1c1c1c'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '8px ' + MONO; ctx.fillStyle = '#444'; ctx.textAlign = 'right';
+    ctx.fillText((p > 0 ? '+' : '') + p + '%', L - 4, y + 3);
+  });
+
+  /* Pct bars */
+  var bW = Math.max(slot * 0.42, 14);
+  D.forEach(function (d, i) {
+    var x = xOf(i), c = clr(d.p);
+    var bTop = yC(d.p), bH = Math.abs(bTop - z);
+    var bY = d.p >= 0 ? bTop : z;
+
+    ctx.fillStyle = c; ctx.globalAlpha = d.intra ? 0.4 : 0.85;
+    ctx.fillRect(x - bW / 2, bY, bW, bH || 1);
+    ctx.globalAlpha = 1;
+
+    /* value label */
+    var lbl = (d.p > 0 ? '+' : '') + d.p.toFixed(2) + '%';
+    ctx.font = 'bold 8px ' + MONO; ctx.fillStyle = c; ctx.textAlign = 'center';
+    ctx.globalAlpha = d.intra ? 0.65 : 1;
+    ctx.fillText(lbl, x, d.p >= 0 ? bTop - 4 : bTop + 10);
+    ctx.globalAlpha = 1;
+
+    /* date label */
+    ctx.font = '8px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'center';
+    ctx.fillText(d.d, x, H - 16);
+    ctx.font = '7px ' + MONO; ctx.fillStyle = '#3a3a3a';
+    if (d.intra)   ctx.fillText('(intraday)', x, H - 6);
+    else if (i === 0)       ctx.fillText('IPO day', x, H - 6);
+    else if (i === N - 2)   ctx.fillText('last close', x, H - 6);
+  });
+})();
+</script>
 </body>
 </html>
