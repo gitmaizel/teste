@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SpaceX News Feed — June 19, 2026</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a0a;
+      --surface:  #111111;
+      --border:   #222222;
+      --accent:   #e31937;
+      --muted:    #666666;
+      --text:     #e8e8e8;
+      --sub:      #aaaaaa;
+      --mono:     'Courier New', Courier, monospace;
+      --sans:     -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: #090a0f;
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+      min-height: 100vh;
+      padding: 0 0 3rem;
+      position: relative;
+    }
+
+    /* ── Starfield canvas ── */
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* everything above the starfield */
+    header, section, main, footer { position: relative; z-index: 1; }
+
+    /* ── Hero header ── */
+    header {
+      max-width: 100%;
+      margin: 0;
+      padding: 0;
+      border-bottom: none;
+      background:
+        linear-gradient(to bottom, rgba(9,10,15,0.35) 0%, rgba(9,10,15,0.92) 75%, #090a0f 100%),
+        url('https://images.unsplash.com/photo-1517976487492-5750f3195933?auto=format&fit=crop&w=1400&q=80')
+        center 40% / cover no-repeat;
+    }
+
+    .hero-inner {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 3.5rem 1.5rem 2rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .hero-logo {
+      display: block;
+      height: 36px;
+      width: auto;
+      margin-bottom: 1rem;
+      /* SVG is black; invert to white for dark background */
+      filter: brightness(0) invert(1);
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+    }
+
+    .feed-meta {
+      margin-top: 0.6rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      color: var(--muted);
+      display: flex;
+      gap: 1.5rem;
+      flex-wrap: wrap;
+    }
+
+    .feed-meta span::before {
+      content: '▸ ';
+      color: var(--accent);
+    }
+
+    /* ── Content backdrop so text stays legible over starfield ── */
+    .stock-section,
+    main,
+    footer {
+      background: rgba(9, 10, 15, 0.82);
+    }
+
+    /* ── Feed list ── */
+    main {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    /* ── Feature photo strips ── */
+    .photo-strip {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+
+    .photo-strip figure {
+      margin: 0;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      line-height: 0;
+    }
+
+    .photo-strip img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      opacity: 0.88;
+      transition: opacity 0.3s;
+    }
+
+    .photo-strip img:hover { opacity: 1; }
+
+    .photo-strip figcaption {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      color: var(--muted);
+      padding: 0.3rem 0.6rem;
+      line-height: 1;
+      background: var(--surface);
+    }
+
+    .feed-count {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 1.25rem 0 0.75rem;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 0;
+    }
+
+    /* ── Article card ── */
+    article {
+      border-bottom: 1px solid var(--border);
+      padding: 1.4rem 0;
+      display: grid;
+      gap: 0.5rem;
+    }
+
+    article:last-of-type {
+      border-bottom: none;
+    }
+
+    .card-top {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      font-family: var(--mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 0.18em 0.55em;
+      border-radius: 2px;
+      color: #fff;
+    }
+
+    .tag-launch      { background: var(--accent); }
+    .tag-finance     { background: #1a6fd4; }
+    .tag-exploration { background: #1d7a45; }
+    .tag-politics    { background: #7a4f1d; }
+
+    .card-time {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+    }
+
+    .card-source {
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+
+    article h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      line-height: 1.35;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    article h2 a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    article h2 a:hover {
+      color: #fff;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+
+    article p {
+      font-size: 0.88rem;
+      color: var(--sub);
+      line-height: 1.65;
+    }
+
+    .read-more {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--accent);
+      text-decoration: none;
+      letter-spacing: 0.06em;
+    }
+
+    .read-more:hover { text-decoration: underline; }
+
+    /* ── Footer ── */
+    footer {
+      max-width: 780px;
+      margin: 2rem auto 0;
+      padding: 1rem 1.5rem 0;
+      border-top: 1px solid var(--border);
+      font-family: var(--mono);
+      font-size: 0.68rem;
+      color: var(--muted);
+      line-height: 1.8;
+    }
+
+    footer a { color: var(--muted); }
+
+    /* ── Stock section ── */
+    .stock-section {
+      max-width: 780px;
+      margin: 0 auto;
+      padding: 1.25rem 1.5rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .market-snippet {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 3px;
+      padding: 0.85rem 1rem;
+      font-family: var(--mono);
+      font-size: 0.72rem;
+      display: grid;
+      gap: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .ms-header {
+      display: flex;
+      justify-content: space-between;
+      color: var(--muted);
+      flex-wrap: wrap;
+      gap: 0.4rem;
+    }
+
+    .ms-ticker { font-weight: 700; color: var(--text); letter-spacing: 0.06em; }
+    .ms-exchange { font-weight: 400; color: var(--muted); font-size: 0.65rem; margin-left: 0.5rem; }
+
+    .ms-price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 0.85rem;
+      flex-wrap: wrap;
+    }
+
+    .ms-price { font-size: 1.45rem; font-weight: 700; color: var(--text); }
+    .ms-up   { color: #22c55e; font-weight: 700; }
+    .ms-down { color: #ef4444; font-weight: 700; }
+
+    .ms-detail { color: var(--muted); line-height: 1.75; }
+
+    .ms-intraday {
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 0.35rem;
+      margin-top: 0.1rem;
+    }
+
+    #spcxChart { display: block; width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<header>
+  <div class="hero-inner">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/d/de/SpaceX-Logo.svg"
+         alt="SpaceX"
+         class="hero-logo">
+    <h1>News Feed</h1>
+    <div class="feed-meta">
+      <span>June 19, 2026</span>
+      <span>6 items</span>
+      <span>Updated 09:00 UTC</span>
+    </div>
+  </div>
+</header>
+
+<section class="stock-section">
+  <div class="market-snippet">
+    <div class="ms-header">
+      <span><span class="ms-ticker">SPCX</span><span class="ms-exchange">NASDAQ</span></span>
+      <span>Last close &bull; Jun 18, 2026 &bull; 16:00 ET</span>
+    </div>
+    <div class="ms-price-row">
+      <span class="ms-price">$191.82</span>
+      <span class="ms-up">&#9650;&thinsp;+$56.82 &nbsp;&bull;&nbsp; +42.1% vs IPO $135.00</span>
+    </div>
+    <div class="ms-detail">
+      Open&nbsp;$192.00 &bull; High&nbsp;$193.50 &bull; Low&nbsp;$190.20 &bull; Vol&nbsp;44.8M
+      &bull; Mkt&nbsp;cap&nbsp;~$2.65T &bull; 52&#8209;wk&nbsp;range&nbsp;$135.00&thinsp;&ndash;&thinsp;$225.64
+    </div>
+    <div class="ms-intraday">
+      Jun&nbsp;19 intraday &nbsp; $174.90 &nbsp;
+      <span class="ms-down">&#9660;&thinsp;&minus;$16.92 &nbsp; &minus;8.83%</span>
+      &nbsp;&bull;&nbsp; session ongoing at time of publication
+    </div>
+  </div>
+  <canvas id="spcxChart" width="740" height="420"></canvas>
+</section>
+
+<main>
+  <p class="feed-count">6 entries &mdash; newest first</p>
+
+  <!-- ── Item 1 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-launch">Launch</span>
+      <span class="card-time">Jun 19, 2026 &bull; 01:50 PDT</span>
+      <span class="card-source">Spaceflight Now</span>
+    </div>
+    <h2>
+      <a href="https://spaceflightnow.com/2026/06/18/live-coverage-spacex-to-launch-intelligence-gathering-satellites-for-the-national-reconnaissance-office-2/" target="_blank" rel="noopener">
+        SpaceX launches classified NROL-179 Starshield satellites from Vandenberg
+      </a>
+    </h2>
+    <p>
+      A Falcon 9 rocket lifted off from Space Launch Complex 4E at Vandenberg Space Force Base at 1:50:45 a.m. PDT carrying an undisclosed number of satellites for the National Reconnaissance Office under the NROL-179 mission. The payload is widely believed to comprise Starshield spacecraft — a hardened, government-specific derivative of the Starlink platform designed for intelligence, surveillance, and reconnaissance. This marks SpaceX's 14th launch supporting the NRO's low-Earth-orbit constellation and its third NRO flight of 2026.
+    </p>
+    <a class="read-more" href="https://spaceflightnow.com/2026/06/18/live-coverage-spacex-to-launch-intelligence-gathering-satellites-for-the-national-reconnaissance-office-2/" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 2 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-finance">Finance</span>
+      <span class="card-time">Jun 19, 2026</span>
+      <span class="card-source">Yahoo Finance</span>
+    </div>
+    <h2>
+      <a href="https://finance.yahoo.com/markets/stocks/article/spacex-stock-drops-after-breaking-3-day-winning-streak-124809291.html" target="_blank" rel="noopener">
+        SpaceX stock (SPCX) slips to $174.90, breaking a three-day winning streak
+      </a>
+    </h2>
+    <p>
+      Shares of SpaceX (NASDAQ: SPCX) retreated to $174.90 on Friday, down from Thursday's close of $191.82, snapping a three-session rally. The pullback comes less than a week after the company's record-breaking IPO and amid broader market volatility. At current prices the company retains a market capitalisation of roughly $2.65 trillion — still above Microsoft and below its intraday peak of $2.94 trillion reached earlier this week.
+    </p>
+    <a class="read-more" href="https://finance.yahoo.com/markets/stocks/article/spacex-stock-drops-after-breaking-3-day-winning-streak-124809291.html" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Photo strip 1: Falcon 9 night launch ── -->
+  <div class="photo-strip">
+    <figure>
+      <img
+        src="https://images.unsplash.com/photo-1541185933-ef5d8ed016c2?auto=format&fit=crop&w=1400&q=80"
+        alt="SpaceX Falcon 9 rocket launch at night"
+        onerror="this.closest('.photo-strip').style.display='none'">
+      <figcaption>Falcon 9 launch &bull; Photo: SpaceX / Unsplash (CC0)</figcaption>
+    </figure>
+  </div>
+
+  <!-- ── Item 3 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-finance">Finance</span>
+      <span class="card-time">Jun 12–15, 2026</span>
+      <span class="card-source">CNBC</span>
+    </div>
+    <h2>
+      <a href="https://www.cnbc.com/2026/06/15/spacex-stock-record-ipo-debut.html" target="_blank" rel="noopener">
+        SpaceX IPO: biggest debut in history, briefly surpasses Amazon at $2.94 T valuation
+      </a>
+    </h2>
+    <p>
+      SpaceX listed on the Nasdaq on June 12 under the ticker SPCX, pricing at $135 per share and raising $75 billion — the largest IPO ever recorded. Shares jumped 25% on debut day to close at $161, then climbed another 20% on the first full trading session. The company's market cap briefly eclipsed Amazon to reach approximately $2.94 trillion before settling. CFRA initiated coverage with a "sell" rating and a $115 price target, citing elevated valuation expectations and capital intensity.
+    </p>
+    <a class="read-more" href="https://www.cnbc.com/2026/06/15/spacex-stock-record-ipo-debut.html" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 4 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-exploration">Exploration</span>
+      <span class="card-time">Jun 9, 2026</span>
+      <span class="card-source">Space.com</span>
+    </div>
+    <h2>
+      <a href="https://www.space.com/" target="_blank" rel="noopener">
+        NASA announces Artemis crew for mission to rehearse docking with SpaceX lunar lander
+      </a>
+    </h2>
+    <p>
+      NASA named the crew for its next Artemis mission, an Earth-orbit flight planned for 2027 that will test rendezvous and docking procedures with lunar landers being built by both SpaceX and Blue Origin. The flight is a critical step on NASA's path back to the Moon, validating the systems needed to transfer astronauts between the Orion capsule and the Human Landing System before a crewed lunar surface attempt.
+    </p>
+    <a class="read-more" href="https://www.space.com/" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Photo strip 2: Starship / dual booster landing ── -->
+  <div class="photo-strip">
+    <figure>
+      <img
+        src="https://images.unsplash.com/photo-1517976384346-3136801d605d?auto=format&fit=crop&w=1400&q=80"
+        alt="SpaceX dual Falcon Heavy booster landing"
+        onerror="this.closest('.photo-strip').style.display='none'">
+      <figcaption>Falcon Heavy booster simultaneous landing &bull; Photo: SpaceX / Unsplash (CC0)</figcaption>
+    </figure>
+  </div>
+
+  <!-- ── Item 5 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-launch">Launch</span>
+      <span class="card-time">May 22, 2026</span>
+      <span class="card-source">Space.com / Spaceflight Now</span>
+    </div>
+    <h2>
+      <a href="https://www.space.com/news/live/spacex-starship-flight-12-launch-updates-may-22-2026" target="_blank" rel="noopener">
+        Starship V3 (Flight 12) achieves successful fiery splashdown in Indian Ocean
+      </a>
+    </h2>
+    <p>
+      SpaceX launched the first Starship Version 3 vehicle on May 22 from Starbase, Texas, in what became the twelfth overall integrated Starship test flight. The upgraded Ship completed its planned trajectory and made a controlled fiery splashdown in the Indian Ocean as intended, meeting every major mission objective. The V3 design features a significantly enlarged propellant capacity and structural refinements aimed at enabling the uncrewed Mars missions SpaceX is targeting for late 2026.
+    </p>
+    <a class="read-more" href="https://www.space.com/news/live/spacex-starship-flight-12-launch-updates-may-22-2026" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+  <!-- ── Item 6 ── -->
+  <article>
+    <div class="card-top">
+      <span class="tag tag-exploration">Exploration</span>
+      <span class="card-time">Ongoing — 2026</span>
+      <span class="card-source">Space.com</span>
+    </div>
+    <h2>
+      <a href="https://www.space.com/space-exploration/launches-spacecraft/whats-next-for-spacexs-starship-mars-rocket-after-flight-10-success" target="_blank" rel="noopener">
+        SpaceX on track for uncrewed Starship Mars landing by end of 2026
+      </a>
+    </h2>
+    <p>
+      Following the success of Starship flights 10 and 12, SpaceX is maintaining its schedule to send minimally configured, leg-free Starship landers to the Martian surface before the year is out. Spokesman Dan Huot described the approach as placing "minimally viable landers on the surface — land right on the skirt, no legs" as an engineering proof-of-concept. If successful, the missions would mark the first time any spacecraft from a private company has landed on Mars, ahead of a crewed mission Elon Musk is targeting for the late 2020s.
+    </p>
+    <a class="read-more" href="https://www.space.com/space-exploration/launches-spacecraft/whats-next-for-spacexs-starship-mars-rocket-after-flight-10-success" target="_blank" rel="noopener">Read full story →</a>
+  </article>
+
+</main>
+
+<footer>
+  <p>SpaceX News Feed &mdash; summaries generated on June 19, 2026.</p>
+  <p>Sources: <a href="https://spaceflightnow.com/" target="_blank" rel="noopener">Spaceflight Now</a> &bull; <a href="https://www.cnbc.com/" target="_blank" rel="noopener">CNBC</a> &bull; <a href="https://finance.yahoo.com/" target="_blank" rel="noopener">Yahoo Finance</a> &bull; <a href="https://www.space.com/" target="_blank" rel="noopener">Space.com</a></p>
+  <p>This page contains manually curated summaries and is not affiliated with SpaceX.</p>
+</footer>
+
+<script>
+/* ── Starfield ── */
+(function () {
+  'use strict';
+  var cv = document.getElementById('starfield');
+  if (!cv) return;
+  var ctx = cv.getContext('2d');
+
+  var stars = [];
+  var W, H;
+
+  function resize() {
+    W = cv.width  = window.innerWidth;
+    H = cv.height = window.innerHeight;
+  }
+
+  function seed() {
+    stars = [];
+    var count = Math.floor((W * H) / 3500);
+    for (var i = 0; i < count; i++) {
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.2 + 0.2,
+        a: Math.random(),
+        da: (Math.random() - 0.5) * 0.004,
+      });
+    }
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    stars.forEach(function (s) {
+      s.a += s.da;
+      if (s.a < 0.05) s.da = Math.abs(s.da);
+      if (s.a > 1)    s.da = -Math.abs(s.da);
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + s.a.toFixed(2) + ')';
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+
+  resize(); seed(); draw();
+  window.addEventListener('resize', function () { resize(); seed(); });
+})();
+
+/* ── Stock chart ── */
+(function () {
+  'use strict';
+  var cv = document.getElementById('spcxChart');
+  if (!cv) return;
+
+  var W = 740, H = 420;
+  var dpr = Math.min(window.devicePixelRatio || 1, 2);
+  cv.width  = W * dpr;
+  cv.height = H * dpr;
+  var ctx = cv.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var IPO = 135;
+  var D = [
+    { d: 'Jun 12', c: 161.11, p:  19.34, intra: false },
+    { d: 'Jun 15', c: 193.30, p:  20.00, intra: false },
+    { d: 'Jun 16', c: 201.81, p:   4.41, intra: false },
+    { d: 'Jun 17', c: 191.82, p:  -4.95, intra: false },
+    { d: 'Jun 18', c: 191.82, p:   0.00, intra: false },
+    { d: 'Jun 19', c: 174.90, p:  -8.83, intra: true  },
+  ];
+
+  var GREEN = '#22c55e', RED = '#ef4444';
+  var MONO = "'Courier New',Courier,monospace";
+  function clr(p) { return p > 0.01 ? GREEN : p < -0.01 ? RED : '#555'; }
+
+  /* Layout */
+  var L = 56, R = 16, DIV = 240;
+  var pY1 = 26, pY2 = DIV - 10;
+  var cY1 = DIV + 22, cY2 = H - 28;
+  var cMid = (cY1 + cY2) / 2, cH2 = (cY2 - cY1) / 2;
+
+  var N = D.length, slot = (W - L - R) / N;
+  function xOf(i) { return L + (i + 0.5) * slot; }
+
+  /* Price Y  [pMin, pMax] → [pY1, pY2] */
+  var pMin = 125, pMax = 215;
+  function yOf(p) { return pY1 + (pMax - p) / (pMax - pMin) * (pY2 - pY1); }
+  var ipoY = yOf(IPO);
+
+  /* Pct Y  ±25 % range */
+  function yC(p) { return cMid - (p / 25) * cH2; }
+  var z = yC(0);
+
+  /* Background */
+  ctx.fillStyle = '#0a0a0a';
+  ctx.fillRect(0, 0, W, H);
+
+  /* Section labels */
+  ctx.font = 'bold 8px ' + MONO;
+  ctx.fillStyle = '#444';
+  ctx.textAlign = 'left';
+  ctx.fillText('PRICE (USD)', L, 14);
+  ctx.fillText('DAILY % CHANGE', L, DIV + 14);
+
+  /* Price gridlines */
+  [150, 170, 190, 210].forEach(function (p) {
+    var y = yOf(p);
+    ctx.setLineDash([2, 5]); ctx.strokeStyle = '#1c1c1c'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '9px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'right';
+    ctx.fillText('$' + p, L - 4, y + 3);
+  });
+
+  /* IPO baseline */
+  ctx.setLineDash([4, 4]); ctx.strokeStyle = '#333'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(L, ipoY); ctx.lineTo(W - R, ipoY); ctx.stroke();
+  ctx.setLineDash([]);
+  ctx.font = 'bold 8px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'left';
+  ctx.fillText('IPO  $135', L + 4, ipoY - 5);
+
+  /* Area fill between price line and IPO baseline */
+  ctx.beginPath();
+  ctx.moveTo(xOf(0), yOf(D[0].c));
+  D.forEach(function (d, i) { ctx.lineTo(xOf(i), yOf(d.c)); });
+  ctx.lineTo(xOf(N - 1), ipoY);
+  ctx.lineTo(xOf(0), ipoY);
+  ctx.closePath();
+  var grad = ctx.createLinearGradient(0, pY1, 0, ipoY);
+  grad.addColorStop(0, 'rgba(34,197,94,0.14)');
+  grad.addColorStop(1, 'rgba(34,197,94,0.02)');
+  ctx.fillStyle = grad; ctx.fill();
+
+  /* Price line segments — each colored by next day's direction */
+  for (var i = 0; i < N - 1; i++) {
+    var nx = D[i + 1];
+    ctx.strokeStyle = clr(nx.p); ctx.lineWidth = 2;
+    ctx.globalAlpha = nx.intra ? 0.5 : 1;
+    if (nx.intra) ctx.setLineDash([5, 3]);
+    ctx.beginPath();
+    ctx.moveTo(xOf(i), yOf(D[i].c));
+    ctx.lineTo(xOf(i + 1), yOf(nx.c));
+    ctx.stroke();
+    ctx.setLineDash([]); ctx.globalAlpha = 1;
+  }
+
+  /* Price dots + % vs IPO labels */
+  D.forEach(function (d, i) {
+    var x = xOf(i), y = yOf(d.c), c = clr(d.p);
+    ctx.globalAlpha = d.intra ? 0.55 : 1;
+    /* outer ring */
+    ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = c; ctx.fill();
+    /* bg cutout */
+    ctx.beginPath(); ctx.arc(x, y, 1.8, 0, Math.PI * 2);
+    ctx.fillStyle = '#0a0a0a'; ctx.fill();
+    /* % vs IPO */
+    var pct = (d.c - IPO) / IPO * 100;
+    ctx.font = 'bold 9px ' + MONO; ctx.fillStyle = c; ctx.textAlign = 'center';
+    ctx.fillText((pct >= 0 ? '+' : '') + pct.toFixed(1) + '%', x, y - 10);
+    ctx.globalAlpha = 1;
+  });
+
+  /* Divider */
+  ctx.strokeStyle = '#222'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, DIV); ctx.lineTo(W, DIV); ctx.stroke();
+
+  /* Pct zero line */
+  ctx.strokeStyle = '#282828'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(L, z); ctx.lineTo(W - R, z); ctx.stroke();
+  ctx.font = '8px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'right';
+  ctx.fillText('0%', L - 4, z + 3);
+
+  /* Pct gridlines */
+  [-20, -10, 10, 20].forEach(function (p) {
+    var y = yC(p);
+    if (y < cY1 - 2 || y > cY2 + 2) return;
+    ctx.setLineDash([2, 5]); ctx.strokeStyle = '#1c1c1c'; ctx.lineWidth = 0.5;
+    ctx.beginPath(); ctx.moveTo(L, y); ctx.lineTo(W - R, y); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = '8px ' + MONO; ctx.fillStyle = '#444'; ctx.textAlign = 'right';
+    ctx.fillText((p > 0 ? '+' : '') + p + '%', L - 4, y + 3);
+  });
+
+  /* Pct bars */
+  var bW = Math.max(slot * 0.42, 14);
+  D.forEach(function (d, i) {
+    var x = xOf(i), c = clr(d.p);
+    var bTop = yC(d.p), bH = Math.abs(bTop - z);
+    var bY = d.p >= 0 ? bTop : z;
+
+    ctx.fillStyle = c; ctx.globalAlpha = d.intra ? 0.4 : 0.85;
+    ctx.fillRect(x - bW / 2, bY, bW, bH || 1);
+    ctx.globalAlpha = 1;
+
+    /* value label */
+    var lbl = (d.p > 0 ? '+' : '') + d.p.toFixed(2) + '%';
+    ctx.font = 'bold 8px ' + MONO; ctx.fillStyle = c; ctx.textAlign = 'center';
+    ctx.globalAlpha = d.intra ? 0.65 : 1;
+    ctx.fillText(lbl, x, d.p >= 0 ? bTop - 4 : bTop + 10);
+    ctx.globalAlpha = 1;
+
+    /* date label */
+    ctx.font = '8px ' + MONO; ctx.fillStyle = '#555'; ctx.textAlign = 'center';
+    ctx.fillText(d.d, x, H - 16);
+    ctx.font = '7px ' + MONO; ctx.fillStyle = '#3a3a3a';
+    if (d.intra)   ctx.fillText('(intraday)', x, H - 6);
+    else if (i === 0)       ctx.fillText('IPO day', x, H - 6);
+    else if (i === N - 2)   ctx.fillText('last close', x, H - 6);
+  });
+})();
+</script>
+</body>
+</html>
